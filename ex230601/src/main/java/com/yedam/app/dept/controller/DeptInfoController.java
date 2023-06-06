@@ -24,21 +24,20 @@ import com.yedam.app.dept.service.DeptService;
 public class DeptInfoController {
 	@Autowired
 	DeptService deptService;
-
-	// 경로 : <-> 기능 ( View )
-	// 경로 + Method -> Unique
-
-	// 조회 ( 데이터, 페이지 ) -> GET
-	// 등록, 수정, 삭제 -> POST
+	
+	// 조회 ( 데이터, 페이지 ) -> GET 방식
+	// 등록, 수정, 삭제 -> POST 방식
+	
+	//model -> 스프링이 관리하는 request & response
 
 	// 전체조회
-	@GetMapping("deptList") // @RequestParam 필수값 => (required = false)로 필수값 해제 (있어도 ok 없어도 ok)
+	@GetMapping("deptList") // @RequestParam => 파라미터 가져오는 방식 / (required = false)로 필수값 해제
 	public String getDeptAllList(@RequestParam(required = false) String msg, Model model, HttpServletRequest request) {
 		model.addAttribute("deptList", deptService.getAllDept());
 
 		System.out.println("redirect : " + msg);
 
-		// ? = object request에서 flashMap 들고오기
+		// ? = object             request에서 flashMap 들고오기
 		Map<String, ?> flashMap = RequestContextUtils.getInputFlashMap(request);
 		if (flashMap != null) {
 			System.out.println("department_id : " + flashMap.get("departmentId"));
@@ -62,48 +61,43 @@ public class DeptInfoController {
 	}
 
 	/*
-	 * redirect vs forward
-	 * 
-	 * 클라이언트 입장에서 return "redirect: 경로" - 데이터,경로 반환 -> 총 2번 요청 (첫번째 요청,응답 데이터는 조회
-	 * 불가) => model.addAttribure 계속 사용 불가 (요청,응답이 깨짐) -> redirectAttribue 사용
-	 * 
-	 * forward - 요청 내에서 경로 이동 후 반환 -> 총 1번 요청 (첫번째 요청,응답 데이터는 조회 가능) =>
-	 * model.addAttribure 계속 사용 (요청,응답이 유지되기때문)
-	 */
+	  redirect vs forward
+	  
+	  redirect - 데이터,경로 반환 -> 응답 후 redirect 경로로 재요청 => 
+	  model.addAttribure 계속 사용 불가 -> redirectAttribue 사용
+	 
+	  forward - 요청 내에서 경로 이동 후 반환 -> 총 1번 요청 (첫번째 요청,응답 데이터는 조회 가능) =>
+	  model.addAttribure 계속 사용
+	  
+	*/
 
 	// 등록 - 기능 : POST
 	@PostMapping("deptInsert")
 	public String deptInsert(DeptInfoVO deptVO, RedirectAttributes rtt) {
 		deptService.insertDeptInfo(deptVO);
-
-		// 보안 필요시 addFlashAttribute 사용 (session에 복사 후 redirect 시 가져옴)
+		//RedirectAttributes -> session에 복사 후 redirect 시 가져옴
+		
+		//addFlashAttribute -> POST 방식
 		rtt.addFlashAttribute("departmentId", deptVO.getDepartmentId());
 
-		// 파라미터 방식(?no=1&..)으로 전송됨
+		// addAttribute -> GET 방식
 		rtt.addAttribute("msg", "test");
 
-		// 아래 파라미터 방식(?no=1&..)으로 데이터 전송됨
-		// return "redirect:deptList?departmentId="+deptVO.getDepartmentId();
 		return "redirect:deptList";
 	}
 
 	// 수정 - 기능 : POST
-
+	
+	//@RequestBody , @ResponseBody -> 비동기 통신시 body을 자바객체로, 자바객체를 body으로 자동변환 (json타입 사용)
+	
+	 //@RequestBody request => 바디 부분만 가져옴 -> content-type : 'application/json' 사용해야함
+	 //여러가지 데이터를 전송해야할 때 유용
+	 
 	// @PostMapping("deptUpdate")
-	@ResponseBody // 응답의 body에 필요한 데이터를 집어넣어줌 / 경로 말고 데이터만 이동
-	/*
-	 * @RequestBody request는 헤더, 바디로 이루어짐 => 그 중에 바디 부분만 가져옴 : JSON 포맷을 사용하는 경우 사용
-	 * -> content-type : 'application/json' 사용해야함
-	 */
+	@ResponseBody // 경로 말고 body에 담겨있는 데이터만 이동 (페이지 이동 X)
 	public Map<String, Object> deptUpdate(@RequestBody List<DeptInfoVO> deptVO) {
 		return deptService.updateDeptList(deptVO);
 	}
-	/*
-	 * public String deptUpdate(@RequestBody List<DeptInfoVO> deptVO,
-	 * RedirectAttributes rtt) { Map<String, Object> map =
-	 * deptService.updateDeptList(deptVO); rtt.addFlashAttribute("updateRes", map);
-	 * return "redirect:deptInfo?departmentId="+deptVO.get(0).getDepartmentId(); }
-	 */
 
 	@PostMapping("deptUpdate")
 	@ResponseBody
