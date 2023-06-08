@@ -3,7 +3,7 @@
   PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
   "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
   <mapper namespace="com.yedam.app.emp.mapper.EmpMapper">
-  	
+  	<!-- ${}는 데이터만 #{} 따옴표 처리 등 해줌 -->
   	<sql id="empWhere">
   		<where>
   		<if test="departmentId != null and departmentId !=''">
