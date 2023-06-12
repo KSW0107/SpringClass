@@ -1,13 +1,17 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
 <!DOCTYPE html>
 <html>
+
 <head>
 <meta charset="UTF-8">
 <title>게시글 수정</title>
 </head>
+
 <body>
 	<form name="updateForm" onsubmit="return false">
+		<!-- submit 차단 -->
 		<div>
 			<h3>게시글 수정</h3>
 		</div>
@@ -36,40 +40,46 @@
 			</tr>
 			<tr>
 				<th>수정날짜</th>
-				<td><input type="date" name="updatedate"></td>
+				<!-- input 태그가 Date 형식만 인식하기 때문에 데이트 형식으로 변환시켜줌 -->
+				<td><input type="date" name="updatedate"
+					value='<fmt:formatDate value="${board.updatedate}" type="date" pattern="yyyy-MM-dd"/>'></td>
 			</tr>
 		</table>
 		<button type="submit" id="updateBtn">수정완료</button>
 		<button type="button" onclick="location.href='boardList'">취소</button>
 
-		<script>
+	</form>
+	<script>
+		document.querySelector('#updateBtn').addEventListener('click', function () {
 
-			document.querySelector('#updateBtn').addEventListener('click', function(){
-				
-			let data = {
+			// form의 데이터를 한번에 가져오는 형식 (formData 데이터 형식은 multipart 의존성,bean 등록 필요)
+			let boardData = new FormData(document.querySelector("[name='updateForm']"))
+
+			/*let data = {
 				'bno' : updateForm.bno.value,
 				'title' : updateForm.title.value,
 				'writer' : updateForm.writer.value,
 				'contents' : updateForm.contents.value,
 				'image' : updateForm.image.value,
 				'updatedate' : updateForm.updatedate.value,
-			}
-				console.log(data)
-				
-				fetch('boardUpdate' , {
-					method : "POST",
-					headers : {
-						"Content-Type" : "application/json",
-					},
-					body : JSON.stringify(data)
+			}*/
+
+			fetch('boardUpdate', {
+					method: "POST",
+					body: boardData
 				})
-				.then(response => response.text())
+				.then(response => response.json())
 				.then(result => {
-					alert(result)		
+					if (result.result) {
+						alert(result.board_no + "번 게시글 수정 완료")
+					} else {
+						alert("수정실패")
+					}
 					location.href="boardList"
 				})
-			})
-		</script>
-	</form>
+				.catch(err => console.log(err))
+		})
+	</script>
 </body>
+
 </html>

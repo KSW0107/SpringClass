@@ -79,7 +79,7 @@
 	z-index: 1500;
 }
 </style>
-<link href="headers.css" rel="stylesheet">
+<link href="${pageContext.request.contextPath}/resources/css/headers.css" rel="stylesheet">
 </head>
 <body>
 	<div class="container">
@@ -91,11 +91,8 @@
       </div>
 
       <ul class="nav col-12 col-md-auto mb-2 justify-content-center mb-md-0">
-        <li><a href="boardList" class="nav-link px-2 link-secondary">게시글 목록</a></li>
-        <li><a href="boardInsert" class="nav-link px-2">게시글 등록</a></li>
-        <li><a href="#" class="nav-link px-2">Pricing</a></li>
-        <li><a href="#" class="nav-link px-2">FAQs</a></li>
-        <li><a href="#" class="nav-link px-2">About</a></li>
+        <li><a href="${pageContext.request.contextPath}/boardList" class="nav-link px-2 link-secondary">게시글 목록</a></li>
+        <li><a href="${pageContext.request.contextPath}/boardInsert" class="nav-link px-2">게시글 등록</a></li>
       </ul>
 
       <div class="col-md-3 text-end">

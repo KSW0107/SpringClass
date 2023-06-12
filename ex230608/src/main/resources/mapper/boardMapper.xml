@@ -7,7 +7,7 @@
 	<select id="selectBoardList" resultType="BoardVO">
 		select bno, title, contents, writer, regdate,  updatedate, image
 		from board
-		order by bno
+		order by bno DESC
 	</select>
 	<!-- 단건 : 조건 1) 글번호 2) 작가 -->
 	<select id="selectBoardInfo" parameterType="BoardVO"
