@@ -5,24 +5,43 @@
 	xsi:schemaLocation="http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-5.2.xsd
 		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
 
-	<security:http pattern="/css/**" security="none" /> <!-- 해당경로(정적파일)은 security:none(해제) -->
-	
+	<security:http pattern="/css/**" security="none" /> <!-- 해당경로(정적파일)은 security:none(적용X) -->
+
 	<security:http>
-	<!-- 인증이 필요한 url 패턴 정의 (순차적) / access = 접근범위? -->
-		<security:intercept-url pattern="/top.jsp" access="permitAll()" /> <!-- 모든 사람 접근 -->
-		<security:intercept-url pattern="/admin/**" access="hasAuthority('ROLE_ADMIN')" /> <!-- 특정 롤(권한)('ROLE_ADMIN')만 접근 가능 -->
-		<security:intercept-url pattern="/**" access="isAuthenticated()" /> <!-- 인가 상관없이 인증이 됐으면 접근 가능 -->
-		<security:form-login default-target-url="/top.jsp" /> <!-- 로그인 완료시 /top.jsp로 이동 -->
-		<security:logout logout-url="/logout" logout-success-url="/top.jsp" /> <!-- 경로 /logout 입력 시 시큐리티가 알아서 로그아웃 처리, 로그아웃 후 /top.jsp로 이동 -->
-		<security:csrf disabled="true" />
+		<!-- 인증이 필요한 url 패턴 정의 (순차적) / access = 접근범위? -->
+		<security:intercept-url pattern="/top.jsp"
+			access="permitAll()" /> <!-- 모든 사람 접근 -->
+		<security:intercept-url pattern="/admin/**"
+			access="hasAuthority('ROLE_ADMIN')" /> <!-- 특정 롤(권한)('ROLE_ADMIN')만 접근 가능 -->
+		<security:intercept-url pattern="/**"
+			access="isAuthenticated()" /> <!-- 인가 상관없이 인증이 됐으면 접근 가능 -->
+		<security:form-login default-target-url="/top.jsp" /> <!-- 기본 동작(form) | 로그인 완료시 -> /top.jsp로 이동 -->
+		<security:logout logout-url="/logout"
+			logout-success-url="/top.jsp" /> <!-- 경로 /logout 입력 시 시큐리티가 알아서 로그아웃 처리, 로그아웃 후 /top.jsp로 이동 -->
+		<!--  <security:csrf disabled="true" /> -->
+		<!-- csrf - get 방식 이외의 모든 방식 토큰확인 / 없을 시 요청 거부 -->
 	</security:http>
 	
+	<bean id="userDetailsService" class="com.yedam.app.user.service.CustomerUserDetailsService" />
+
 	<security:authentication-manager>
-		<security:authentication-provider>
-			<security:user-service>
-				<security:user name="user" password="{noop}1234" authorities="ROLE_USER" />
-				<security:user name="admin" password="{noop}1234" authorities="ROLE_ADMIN" />
-			</security:user-service>
+		<!-- <security:authentication-provider>
+			users-by-username-query : 로그인 정보 authorities-by-username-query : 
+				권한 정보
+			<security:jdbc-user-service
+				data-source-ref="dataSource"
+				users-by-username-query="SELECT login_id, '{noop}' || password, 1
+										 FROM t_user
+										 WHERE login_id = ?"
+				authorities-by-username-query="SELECT LOGIN_ID, ROLE_NAME
+											   FROM t_user JOIN t_user_role
+											   ON t_user.id = t_user_role.user_id
+											   			   JOIN t_role
+											   ON t_user_role.role_id = t_role.id
+											   WHERE login_id = ?" />
+		</security:authentication-provider> -->
+		<!-- 지정한 userDatails 사용 -->
+		<security:authentication-provider user-service-ref="userDetailsService">
 		</security:authentication-provider>
 	</security:authentication-manager>
 
