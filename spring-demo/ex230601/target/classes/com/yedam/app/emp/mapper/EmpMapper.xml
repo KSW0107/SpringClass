@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.yedam.app.emp.mapper.EmpMapper">
+	<sql id="empWhere">
+		<where> 
+		<if test="departmentId!=null and departmentId!=''">
+			AND department_id in 
+			<foreach open="(" close=")" collection="deptArr" item="dept" separator=",">
+				#{dept}
+			</foreach>
+		</if>
+		<if test="firstName!=null and firstName!=''">
+			AND  first_name like '%'||#{firstName}||'%' <!-- '%${firstName}%' -->
+		</if>
+		</where>
+	</sql>
+	<select id="selectEmp" resultType="EmpVO">
+		SELECT employee_id,
+			first_name,
+			last_name,
+			email,
+			to_char(hire_date,'yyyy-mm-dd') hire_date,
+			job_id,
+			department_id
+		FROM EMPLOYEES
+		WHERE employee_id=#{empNo}
+	</select>
+	
+	<select id="selectCount" resultType="int">
+		SELECT count(*) 
+		FROM employees
+		<include refid="empWhere"></include>
+	</select>
+	
+	<select id="selectEmpList" resultType="EmpVO">
+		SELECT employee_id,first_name,last_name,department_id
+		FROM EMPLOYEES
+		<include refid="empWhere"></include>
+		<choose>
+			<when test="orderColumn!=null and orderColumn!=''">
+				ORDER BY ${orderColumn}
+			</when>
+			<otherwise>
+				ORDER BY employee_id
+			</otherwise>
+		</choose>
+	</select>
+	<insert id="insertEmp" parameterType="EmpVO">
+		<selectKey keyProperty="employeeId" resultType="String" order="BEFORE">
+			select EMPLOYEES_SEQ.nextval from dual 
+		</selectKey>
+		INSERT INTO EMPLOYEES(
+			employee_id,
+			first_name,
+			last_name,
+			email,
+			hire_date,
+			job_id,
+			department_id
+		)
+		VALUES(
+			#{employeeId},
+			#{firstName},
+			#{lastName},
+			#{email},
+			#{hireDate},
+			#{jobId},
+			#{departmentId}
+		)
+	</insert>
+	<delete id="deleteEmp" parameterType="int">
+		DELETE FROM EMPLOYEES
+		WHERE employee_id=#{empNo}
+	</delete>
+	<update id="updateEmp" parameterType="EmpVO">
+		UPDATE EMPLOYEES 
+		SET last_name=#{lastName},
+			first_name=#{firstName},
+			email=#{email} 
+		WHERE employee_id=#{employeeId}
+	</update>
+	
+	<select id="selectJobs" resultType="map">
+		SELECT job_id "jobId",job_title "jobTitle"
+		FROM JOBS
+		ORDER BY job_title
+	</select>
+	<select id="selectDepts" resultType="map">
+		SELECT department_id "departmentId",department_name "departmentName"
+		FROM DEPARTMENTS
+		ORDER BY department_name
+	</select>
+</mapper>
