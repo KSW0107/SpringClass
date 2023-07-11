@@ -23,7 +23,8 @@ public class UploadController {
 	public String uploadPath;
 
 	@GetMapping("upload")
-	public void getUploadPath() {
+	public String getUploadPath() {
+		return "upload";
 	}
 
 	@PostMapping("/uploadsAjax")

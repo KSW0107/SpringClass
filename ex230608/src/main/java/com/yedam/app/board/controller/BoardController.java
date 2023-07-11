@@ -65,7 +65,6 @@ public class BoardController {
 	@PostMapping("boardUpdate")
 	@ResponseBody
 	public Map<String, Object> boardUpdate(BoardVO getBoard) {	
-		System.out.println("!!!!!!!!!!!!!!!!!!!!"+getBoard);
 		boolean result = false;
 		int boardNo = boardService.updateBoardInfo(getBoard);
 		if(boardNo > -1) {

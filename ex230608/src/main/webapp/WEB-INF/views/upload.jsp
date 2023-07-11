@@ -24,7 +24,9 @@
 			var files = inputFile[0].files;
 			//files : 선택한 모든 파일을 나열하는 FileList 객체입니다
 			//multiple 특성을 지정하지 않았다면 두 개 이상의 파일을 포함하지 않습니다
-
+			
+			console.log(files)
+			
 			for (var i = 0; i < files.length; i++) {
 				console.log(files[i]);
 				formData.append("uploadFiles", files[i]); //키,값으로 append

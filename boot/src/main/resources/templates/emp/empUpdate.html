@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html xmlns:th="https://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>emUpdate.html</title>
+</head>
+<body>
+	<!-- th:object -> form 태그 안의 데이터를 객체로 연결 시키면 name 지정 필요 X -->
+	<!-- but 태그마다 th:field 설정 필요 -->
+	<form id="frm" name="frm" th:object="${empVO}">
+		<div>
+			<label id="empId">사원번호</label> <input type="text" id="empId"
+				th:field="*{employeeId}">
+		</div>
+		<div>
+			<label id="name">이름</label> <input type="text" id="name"
+				th:field="*{lastName}">
+		</div>
+		<div>
+			<label id="email">이메일</label> <input type="text" id="email"
+				th:field="*{email}">
+		</div>
+		<div>
+			<label id="hireDate">입사일</label> <input type="text" id="hireDate"
+				th:field="*{hireDate}">
+		</div>
+		<div>
+			<label id="job">업무</label> <input type="text" id="job"
+				th:field="*{jobId}">
+		</div>
+		<div>
+			<button type="button" id="save">수정</button>
+			<button type="button" th:onclick="|location.href='@{/empList}'|">취소</button>
+		</div>
+	</form>
+
+	<script>
+	//data 타입과 contentType 일치시켜야함
+	//contentType:json => controller @requestBody 사용
+		$('#save').on('click',function(){
+			console.log(JSON.stringify($('#frm').serializeObject())) 
+			$.ajax("employees",{
+				method : "PUT",
+				contentType : "application/json", //"application/x-www-form-urlencoded" -> formData 형식 
+				data:JSON.stringify($('#frm').serializeObject()) //new formData()시 매개변수는 form의 name 속성
+			})
+			.done(result=>{
+				alert("수정완료")
+			})
+		})
+	</script>
+</body>
+</html>

@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{user/layout}">
+<head>
+<meta charset="UTF-8">
+<title>empList.html</title>
+<style>
+table, tr, td {
+	border: 1px solid;
+}
+
+.oddbg {
+	background-color: yellowgreen;
+}
+</style>
+</head>
+<body>
+	<div layout:fragment="content">
+		<div id="empInsertDiv"></div>
+		<p th:text="${'Welcome to our <b>fantastic</b> grocery store!'}"></p>
+		<p th:utext="${'Welcome to our <b>fantastic</b> grocery store!'}"></p>
+		<h3>전체 사원수 : [[${#lists.size(empList)}]] 명</h3>
+		<h3>
+			전체 사원수 : <span th:text="${#lists.size(empList)}"></span> 명
+		</h3>
+		<table>
+			<thead>
+				<tr>
+					<td>사원번호</td>
+					<td>이름</td>
+					<td>부서번호</td>
+					<td>입사일자</td>
+					<td>급여</td>
+				</tr>
+			</thead>
+			<tbody>
+				<!-- 두번째 매개변수는 status명 지정 / 기본은 empStat -->
+				<tr th:each="emp, es: ${empList}" th:class="${es.odd}?oddbg:_ ">
+					<!-- url 파라미터 편리 설정 -->
+					<td>[[${es.count}]] <!-- javascript 사용 시 매개변수 대괄호에 묶어 보내기 -->
+						<a th:href="|javascript:empUpdate(${emp.employeeId})|">[[${emp.employeeId}]]</a>
+						<a th:href="@{empInfo/{id}(id=${emp.employeeId})}">[[${emp.employeeId}]]</a>
+					</td>
+					<td th:text="|${emp.firstName} ${emp.lastName}|">King Smith</td>
+					<td th:text="${emp.departmentId}">개발</td>
+					<td th:text="${#dates.format(emp.hireDate, 'yyyy/MM/dd')}">2020/12/01</td>
+					<td
+						th:text="${#numbers.formatDecimal(emp.salary,3,'COMMA',0,'COMMA')}">30000</td>
+				</tr>
+			</tbody>
+		</table>
+
+		<script
+			src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.0/jquery.min.js"></script>
+		<script src="/json.min.js"></script>
+		<script>
+			// 매개수 > 페이지, 서버에 필요한 데이터 , 로드 후 실행할 함수
+			//$('#empInsertDiv').load("empInsert", null, function(){alret('load')})
+
+			/* $.ajax("/empInsert")
+			.done(function(result){
+				$('#empInsertDiv').html(result)
+			}) */
+
+			function empUpdate(id) {
+				//dataType 생략 가능 (ajax 함수가 넘어오는 데이터타입을 판단)
+				$.ajax(`/empUpdate?employeeId=${id}`, {
+					dataType : "html"
+				})
+				//ajax 함수가 json 타입 알아서 변환시켜줌
+				.done(function(result) {
+					console.log(typeof result)
+					$('#empInsertDiv').html(result)
+				})
+			}
+		</script>
+	</div>
+</body>
+</html>
