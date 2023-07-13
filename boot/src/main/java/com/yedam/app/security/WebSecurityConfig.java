@@ -27,7 +27,7 @@ public class WebSecurityConfig {
 	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 		http.authorizeHttpRequests(																			//ROLE_ 생략 가능 (DB에는 반드시 넣기)
 				(requests) -> requests.antMatchers("/", "/home").permitAll()
-				.antMatchers("/emp/**").hasRole("ADMIN")
+				//.antMatchers("/emp/**").hasRole("ADMIN")
 				.anyRequest().authenticated())
 				.formLogin() //필터?
 				.successHandler(authenticationSuccessHandler()) //로그인 성공 이후 처리
