@@ -1,0 +1,32 @@
+server:
+    port: 80
+
+spring:
+    datasource:
+        driver-class-name: oracle.jdbc.OracleDriver
+        hikari:
+            maximum-pool-size: 3
+        password: hr
+        url: jdbc:oracle:thin:@127.0.0.1:1521/xe
+        username: hr
+    jpa:
+      database: oracle
+      show-sql: true
+      properties:
+        hibernate:
+          format_sql: true
+      hibernate:
+        ddl-auto: update
+       
+        
+logging:
+    level:
+      root: warn
+      org:
+        type:
+          descriptor:
+            sql: trace  
+      com:
+        yedam:
+          app: debug
+  
